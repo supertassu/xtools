@@ -18,19 +18,26 @@ env:
 
 before_install:
   - pip install --user codecov
+  - sudo apt install doxygen graphviz
 
 install:
   - composer install
   - 'sed -i "s/app.is_labs: .*/app.is_labs: $IS_LABS/" app/config/parameters.yml'
 
 script:
+  # Quickest things first.
   - composer validate
   - ./vendor/bin/parallel-lint --exclude vendor .
+  # Testing and code coverage.
   - ./vendor/bin/phpunit --coverage-clover=coverage.xml
   - codecov
+  # PSR2 coding standards.
   - ./vendor/bin/phpcs -s .
+  # Generate Doxygen docs, and fail if there's any error output.
+  - doxygen doxygen.conf 2> >(tee doxygen.err >&2)
+  - test ! -s doxygen.err
 
-sudo: false
+sudo: true
 
 matrix:
   # Only test both IS_LABS values on 5.5, because that's what Labs uses.

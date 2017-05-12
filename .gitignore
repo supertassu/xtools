@@ -23,6 +23,8 @@
 .idea/
 
 /docs/_build
+/docs/api
+/doxygen.err
 /app/config/multisite.yml
 *.swp
 .DS_Store
