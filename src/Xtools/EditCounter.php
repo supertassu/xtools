@@ -717,6 +717,10 @@ class EditCounter extends Model
      */
     public function yearCounts($currentTime = null)
     {
+        if (isset($this->yearCounts)) {
+            return $this->yearCounts;
+        }
+
         $out = $this->monthCounts($currentTime);
 
         foreach ($out['totals'] as $nsId => $years) {
@@ -725,6 +729,7 @@ class EditCounter extends Model
             }
         }
 
+        $this->yearCounts = $out;
         return $out;
     }
 

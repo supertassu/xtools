@@ -23,6 +23,10 @@ class EditCounterRepository extends Repository
 
     public function prepareTemporaryTable(Project $project, User $user)
     {
+        if (isset($this->tempTable) && isset($this->tempParentTable)) {
+            return;
+        }
+
         // FIXME: move the 20000 figure to config?
         $engine = $user->getEditCount($project) > 20000 ? 'InnoDB' : 'MEMORY';
 
