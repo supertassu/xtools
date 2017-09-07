@@ -66,7 +66,6 @@ class EditCounterController extends Controller
         $editCounterRepo->setContainer($this->container);
         $this->editCounter = new EditCounter($this->project, $this->user);
         $this->editCounter->setRepository($editCounterRepo);
-        $this->editCounter->prepareTemporaryTable();
     }
 
     /**

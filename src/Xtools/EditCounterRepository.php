@@ -105,6 +105,8 @@ class EditCounterRepository extends Repository
             return $this->cache->getItem($cacheKey)->get();
         }
 
+        $this->prepareTemporaryTable($project, $user);
+
         // Prepare the queries and execute them.
         $archiveTable = $this->getTableName($project->getDatabaseName(), 'archive');
         $revisionTable = $this->getTableName($project->getDatabaseName(), 'revision');
@@ -463,17 +465,11 @@ class EditCounterRepository extends Repository
             return $this->cache->getItem($cacheKey)->get();
         }
 
+        $this->prepareTemporaryTable($project, $user);
+
         // Query.
         $revisionTable = $this->getTableName($project->getDatabaseName(), 'revision');
         $pageTable = $this->getTableName($project->getDatabaseName(), 'page');
-        // $sql = "SELECT page_namespace, COUNT(rev_id) AS total
-        //     FROM $pageTable p JOIN $revisionTable r ON (r.rev_page = p.page_id)
-        //     WHERE r.rev_user = :id
-        //     GROUP BY page_namespace";
-        // $resultQuery = $this->getProjectsConnection()->prepare($sql);
-        // $resultQuery->bindParam(":id", $userId);
-        // $resultQuery->execute();
-        // $results = $resultQuery->fetchAll();
         $sql = "SELECT page_namespace, COUNT(rev_id) AS total
                 FROM $this->tempTable
                 GROUP BY page_namespace";
@@ -577,6 +573,8 @@ class EditCounterRepository extends Repository
             return $this->cache->getItem($cacheKey)->get();
         }
 
+        $this->prepareTemporaryTable($project, $user);
+
         $username = $user->getUsername();
         $revisionTable = $this->getTableName($project->getDatabaseName(), 'revision');
         $pageTable = $this->getTableName($project->getDatabaseName(), 'page');
@@ -609,6 +607,8 @@ class EditCounterRepository extends Repository
         if ($this->cache->hasItem($cacheKey)) {
             return $this->cache->getItem($cacheKey)->get();
         }
+
+        $this->prepareTemporaryTable($project, $user);
 
         $username = $user->getUsername();
         $hourInterval = 2;
@@ -654,6 +654,8 @@ class EditCounterRepository extends Repository
         if ($this->cache->hasItem($cacheKey)) {
             return $this->cache->getItem($cacheKey)->get();
         }
+
+        $this->prepareTemporaryTable($project, $user);
 
         $sql = "SELECT AVG(sizes.size) AS average_size,
                     COUNT(CASE WHEN sizes.size < 20 THEN 1 END) AS small_edits,
