@@ -18,12 +18,9 @@ class EditCounterRepository extends Repository
     /** @var string The name of the temporary table holding the revisions. */
     protected $tempTable;
 
-    /** @var string The name of the temporary table holding the parent revisions. */
-    protected $tempParentTable;
-
     public function prepareTemporaryTable(Project $project, User $user)
     {
-        if (isset($this->tempTable) && isset($this->tempParentTable)) {
+        if (isset($this->tempTable)) {
             return;
         }
 
@@ -42,19 +39,10 @@ class EditCounterRepository extends Repository
                 `rev_id` int(8) unsigned NOT NULL DEFAULT '0',
                 `rev_parent_id` int(8) unsigned NOT NULL DEFAULT '0',
                 `rev_len` bigint(10) unsigned NOT NULL DEFAULT '0',
+                `rev_parent_len` bigint(10) unsigned NOT NULL DEFAULT '0',
                 `rev_comment` varbinary(255) DEFAULT ''
                 ) ENGINE=$engine DEFAULT CHARSET=BINARY";
         $this->getProjectsConnection()->query($sql);
-
-        $this->tempParentTable = "`s53003__xtools_dev`.`$tempTableName"."_parent_revs`";
-        $sql = "CREATE TEMPORARY TABLE $this->tempParentTable (
-                `rev_id` int(8) unsigned NOT NULL DEFAULT '0',
-                `rev_len` bigint(10) unsigned NOT NULL DEFAULT '0'
-                ) ENGINE=$engine DEFAULT CHARSET=BINARY";
-        $this->getProjectsConnection()->query($sql);
-
-        // Supply data
-        // $this->getRevisions()
 
         // FIXME: make sure this works for IPs
         $whereClause = $user->isAnon()
@@ -69,6 +57,7 @@ class EditCounterRepository extends Repository
                 SELECT page_namespace, page_title, revs.rev_page, revs.rev_timestamp,
                     revs.rev_minor_edit, IFNULL(revs.rev_id, 0),
                     IFNULL(revs.rev_parent_id, 0), IFNULL(revs.rev_len, 0),
+                    IFNULL(parentrevs.rev_len, 0),
                     -- Remove section title from edit summary
                     TRIM(IF(
                         INSTR(revs.rev_comment, '/*') = 1 AND INSTR(revs.rev_comment, '*/') > 1,
@@ -77,15 +66,8 @@ class EditCounterRepository extends Repository
                     )) AS rev_comment
                 FROM $revisionTable revs
                 JOIN $pageTable ON page_id = revs.rev_page
-                WHERE $whereClause";
-        $this->getProjectsConnection()->query($sql);
-
-        // Populate temporary table holding parent revisions so we can get the edit sizes.
-        $sql = "INSERT INTO $this->tempParentTable
-                SELECT IFNULL(parentrevs.rev_id, 0) AS rev_id,
-                    IFNULL(parentrevs.rev_len, 0) AS rev_len
-                FROM $revisionTable revs
-                LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+                LEFT JOIN $revisionTable AS parentrevs
+                    ON (revs.rev_parent_id = parentrevs.rev_id)
                 WHERE $whereClause";
         $this->getProjectsConnection()->query($sql);
     }
@@ -661,11 +643,8 @@ class EditCounterRepository extends Repository
                     COUNT(CASE WHEN sizes.size < 20 THEN 1 END) AS small_edits,
                     COUNT(CASE WHEN sizes.size >= 1000 THEN 1 END) AS large_edits
                 FROM (
-                    SELECT (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS size
+                    SELECT (CAST(rev_len AS SIGNED) - IFNULL(rev_parent_len, 0)) AS size
                     FROM $this->tempTable revs
-                    LEFT JOIN $this->tempParentTable AS parentrevs
-                        ON (revs.rev_parent_id = parentrevs.rev_id)
-                    GROUP BY revs.rev_id
                 ) sizes";
         $resultQuery = $this->getProjectsConnection()->query($sql);
         $results = $resultQuery->fetchAll()[0];
