@@ -33,7 +33,7 @@ class EditCounterRepository extends Repository
         $tempTableName = date('YmdHis') . md5($project->getDomain() . $user->getUsername());
         $this->tempTable = "`s53003__xtools_dev`.`$tempTableName`";
 
-        $sql = "CREATE TABLE $this->tempTable (
+        $sql = "CREATE TEMPORARY TABLE $this->tempTable (
                 `page_namespace` int(11) NOT NULL DEFAULT '0',
                 `page_title` varbinary(255) NOT NULL DEFAULT '',
                 `rev_page` int(8) unsigned NOT NULL DEFAULT '0',
@@ -47,7 +47,7 @@ class EditCounterRepository extends Repository
         $this->getProjectsConnection()->query($sql);
 
         $this->tempParentTable = "`s53003__xtools_dev`.`$tempTableName"."_parent_revs`";
-        $sql = "CREATE TABLE $this->tempParentTable (
+        $sql = "CREATE TEMPORARY TABLE $this->tempParentTable (
                 `rev_id` int(8) unsigned NOT NULL DEFAULT '0',
                 `rev_len` bigint(10) unsigned NOT NULL DEFAULT '0'
                 ) ENGINE=$engine DEFAULT CHARSET=BINARY";
