@@ -57,7 +57,6 @@
 	"created-by": "Opprettet av",
 	"current-admins": "Nåværende administratorer",
 	"current-size": "Nåværende størrelse",
-	"data-limit": "Dataene er begrenset til {{PLURAL:$1|den siste redigeringen|de siste $2 redigeringene}}.",
 	"date": "Dato",
 	"delete": "Sletting",
 	"deleted": "Slettet",

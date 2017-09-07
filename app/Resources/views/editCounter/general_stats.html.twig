@@ -218,20 +218,16 @@
                 <td>{{ msg('small-edits') }}*</td>
                 <td>
                     {{ ec.countSmallEdits|number_format }}
-                    {% if ec.countLast5000 %}
-                        &middot;
-                        ({{ ((ec.countSmallEdits / ec.countLast5000) * 100)|percent_format }})
-                    {% endif %}
+                    &middot;
+                    ({{ ((ec.countSmallEdits / ec.countLiveRevisions) * 100)|percent_format }})
                 </td>
             </tr>
             <tr>
                 <td>{{ msg('large-edits') }}*</td>
                 <td>
                     {{ ec.countLargeEdits|number_format }}
-                    {% if ec.countLast5000 %}
-                        &middot;
-                        ({{ ((ec.countLargeEdits / ec.countLast5000) * 100)|percent_format }})
-                    {% endif %}
+                    &middot;
+                    ({{ ((ec.countLargeEdits / ec.countLiveRevisions) * 100)|percent_format }})
                 </td>
             </tr>
         </tbody>
@@ -443,12 +439,12 @@
             [{
                 label: '< 20 ' ~ msg('num-bytes', [20]) ~ '*',
                 value: ec.countSmallEdits,
-                percentage: ((ec.countSmallEdits / ec.countLast5000) * 100)
+                percentage: ((ec.countSmallEdits / ec.countLiveRevisions) * 100)
             },
             {
                 label: '≥ 20 ' ~ msg('num-bytes', [20]) ~ '*',
-                value: ec.countLast5000 - ec.countSmallEdits,
-                percentage: 100 - ((ec.countSmallEdits / ec.countLast5000) * 100)
+                value: ec.countLiveRevisions - ec.countSmallEdits,
+                percentage: 100 - ((ec.countSmallEdits / ec.countLiveRevisions) * 100)
             }]
         )
     }}
@@ -456,19 +452,16 @@
         chart.pie_chart('large_edits',
             [{
                 label: '< 1000 ' ~ msg('num-bytes', [1000]) ~ '*',
-                value: ec.countLast5000 - ec.countLargeEdits,
-                percentage: 100 - ((ec.countLargeEdits / ec.countLast5000) * 100)
+                value: ec.countLiveRevisions - ec.countLargeEdits,
+                percentage: 100 - ((ec.countLargeEdits / ec.countLiveRevisions) * 100)
             },
             {
                 label: '≥ 1000 ' ~ msg('num-bytes', [1000]) ~ '*',
                 value: ec.countLargeEdits,
-                percentage: ((ec.countLargeEdits / ec.countLast5000) * 100)
+                percentage: ((ec.countLargeEdits / ec.countLiveRevisions) * 100)
             }]
         )
     }}
-    <div class="footnotes">
-        * {{ msg('data-limit', [5000, 5000|number_format]) }}
-    </div>
 </div>
 {% endif %}
 

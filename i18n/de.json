@@ -58,7 +58,6 @@
 	"created-by": "Erstellt von",
 	"current-admins": "Aktuelle Administratoren",
 	"current-size": "Aktuelle Größe",
-	"data-limit": "Daten begrenzt auf die {{PLURAL:$1|letzte Bearbeitung|letzten $2 Bearbeitungen}}",
 	"date": "Datum",
 	"delete": "Löschungen",
 	"deleted": "Gelöscht",

@@ -48,7 +48,6 @@
 	"bugs": "Greške",
 	"count": "Broj",
 	"current-size": "Trenutna veličina",
-	"data-limit": "Podaci su ograničeni na {{PLURAL:$1|posljednju izmjenu|posljednje $2 izmjene|posljednjih $2 izmjena}}",
 	"date": "Datum",
 	"deleted-edits": "Obrisane izmjene",
 	"diff": "Razl",

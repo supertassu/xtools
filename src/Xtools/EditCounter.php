@@ -844,16 +844,6 @@ class EditCounter extends Model
     }
 
     /**
-     * Get the total edit count of this user or 5,000 if they've made more than 5,000 edits.
-     * This is used to ensure percentages of small and large edits are computed properly.
-     * @return int
-     */
-    public function countLast5000()
-    {
-        return $this->countLiveRevisions() > 5000 ? 5000 : $this->countLiveRevisions();
-    }
-
-    /**
      * Get the number of edits under 20 bytes of the user's past 5000 edits.
      * @return int
      */

@@ -33,7 +33,7 @@ class EditCounterRepository extends Repository
         $tempTableName = date('YmdHis') . md5($project->getDomain() . $user->getUsername());
         $this->tempTable = "`s53003__xtools_dev`.`$tempTableName`";
 
-        $sql = "CREATE TEMPORARY TABLE $this->tempTable (
+        $sql = "CREATE TABLE $this->tempTable (
                 `page_namespace` int(11) NOT NULL DEFAULT '0',
                 `page_title` varbinary(255) NOT NULL DEFAULT '',
                 `rev_page` int(8) unsigned NOT NULL DEFAULT '0',
@@ -47,7 +47,7 @@ class EditCounterRepository extends Repository
         $this->getProjectsConnection()->query($sql);
 
         $this->tempParentTable = "`s53003__xtools_dev`.`$tempTableName"."_parent_revs`";
-        $sql = "CREATE TEMPORARY TABLE $this->tempParentTable (
+        $sql = "CREATE TABLE $this->tempParentTable (
                 `rev_id` int(8) unsigned NOT NULL DEFAULT '0',
                 `rev_len` bigint(10) unsigned NOT NULL DEFAULT '0'
                 ) ENGINE=$engine DEFAULT CHARSET=BINARY";
@@ -80,7 +80,7 @@ class EditCounterRepository extends Repository
                 WHERE $whereClause";
         $this->getProjectsConnection()->query($sql);
 
-        // Populate temporary table holding parent revisions so we can get the edit sizes
+        // Populate temporary table holding parent revisions so we can get the edit sizes.
         $sql = "INSERT INTO $this->tempParentTable
                 SELECT IFNULL(parentrevs.rev_id, 0) AS rev_id,
                     IFNULL(parentrevs.rev_len, 0) AS rev_len
@@ -665,6 +665,7 @@ class EditCounterRepository extends Repository
                     FROM $this->tempTable revs
                     LEFT JOIN $this->tempParentTable AS parentrevs
                         ON (revs.rev_parent_id = parentrevs.rev_id)
+                    GROUP BY revs.rev_id
                 ) sizes";
         $resultQuery = $this->getProjectsConnection()->query($sql);
         $results = $resultQuery->fetchAll()[0];

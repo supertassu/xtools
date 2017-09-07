@@ -58,7 +58,6 @@
 	"created-by": "创建者",
 	"current-admins": "当前管理员",
 	"current-size": "当前大小",
-	"data-limit": "数据已限定到最近$2次{{PLURAL:$1|编辑}}",
 	"date": "日期",
 	"delete": "删除",
 	"deleted": "已删除",
